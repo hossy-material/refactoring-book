@@ -1,4 +1,28 @@
 module.exports.statement = function statement(invoice, plays) {
+  let totalAmount = 0;
+  let volumeCredits = 0;
+  let result = `Statement for ${invoice.customer}`;
+
+  const format = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  }).format;
+
+  for (let perf of Object.values(invoice.performances)) {
+    // ボリューム特有のポイントを加算
+    volumeCredits += Math.max(perf.audience - 30, 0);
+    // 喜劇のときは10人につき、さらにポイントを加算
+    if ("comedy" === playFor(perf))
+      volumeCredits += Math.floor(perf.audience / 5);
+    // 注文の内訳を表示
+    result += ` ${playFor(perf).name}: ${format(amountFor(perf) / 100)} (${perf.audience} seats)\n`;
+    totalAmount += amountFor(perf);
+  }
+  result += `Amount owed is ${format(totalAmount/100)}\n`;
+  result += `You earned ${volumeCredits} credits\n`;
+  return result;
+
   function amountFor(aPerformance) {
     let result = 0;
     switch (playFor(aPerformance).type) {
@@ -24,31 +48,4 @@ module.exports.statement = function statement(invoice, plays) {
   function playFor(aPerformance) {
     return plays[aPerformance.playID];
   }
-
-  let totalAmount = 0;
-  let volumeCredits = 0;
-  let result = `Statement for ${invoice.customer}`;
-
-  const format = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  }).format;
-
-  for (let perf of Object.values(invoice.performances)) {
-    const play = playFor(perf);
-    let thisAmount = amountFor(perf);
-
-    // ボリューム特有のポイントを加算
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // 喜劇のときは10人につき、さらにポイントを加算
-    if ("comedy" === playFor(perf))
-      volumeCredits += Math.floor(perf.audience / 5);
-    // 注文の内訳を表示
-    result += ` ${playFor(perf).name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
-    totalAmount += thisAmount;
-  }
-  result += `Amount owed is ${format(totalAmount/100)}\n`;
-  result += `You earned ${volumeCredits} credits\n`;
-  return result;
 }
