@@ -4,10 +4,12 @@ module.exports.statement = function statement(invoice, plays) {
   let result = `Statement for ${invoice.customer}`;
 
   for (let perf of Object.values(invoice.performances)) {
-    volumeCredits += volumeCreditsFor(perf);
     // 注文の内訳を表示
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
     totalAmount += amountFor(perf);
+  }
+  for (let perf of Object.values(invoice.performances)) {
+    volumeCredits += volumeCreditsFor(perf);
   }
   result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
