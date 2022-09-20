@@ -20,6 +20,9 @@ module.exports.statement = function statement(invoice, plays) {
     }
     return result;
   }
+  function playFor(aPerformance) {
+    return plays[aPerformance.playID];
+  }
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}`;
@@ -31,16 +34,16 @@ module.exports.statement = function statement(invoice, plays) {
   }).format;
 
   for (let perf of Object.values(invoice.performances)) {
-    const play = plays[perf.playID];
-    let thisAmount = amountFor(perf, play);
+    const play = playFor(perf);
+    let thisAmount = amountFor(perf, playFor(perf));
 
     // ボリューム特有のポイントを加算
     volumeCredits += Math.max(perf.audience - 30, 0);
     // 喜劇のときは10人につき、さらにポイントを加算
-    if ("comedy" === play.type)
+    if ("comedy" === playFor(perf))
       volumeCredits += Math.floor(perf.audience / 5);
     // 注文の内訳を表示
-    result += ` ${play.name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
+    result += ` ${playFor(perf).name}: ${format(thisAmount / 100)} (${perf.audience} seats)\n`;
     totalAmount += thisAmount;
   }
   result += `Amount owed is ${format(totalAmount/100)}\n`;
