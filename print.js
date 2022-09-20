@@ -1,7 +1,7 @@
 module.exports.statement = function statement(invoice, plays) {
   function amountFor(aPerformance, play) {
     let result = 0;
-    switch (play.type) {
+    switch (playFor(aPerformance).type) {
       case "tragedy":
         result = 40000;
         if (aPerformance.audience > 30) {
@@ -16,13 +16,15 @@ module.exports.statement = function statement(invoice, plays) {
         result += 300 * aPerformance.audience;
         break;
       default:
-        throw new Error(`unknown type: ${play.type}`);
+        throw new Error(`unknown type: ${playFor(aPerformance).type}`);
     }
     return result;
   }
+
   function playFor(aPerformance) {
     return plays[aPerformance.playID];
   }
+
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `Statement for ${invoice.customer}`;
