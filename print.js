@@ -7,10 +7,7 @@ module.exports.statement = function statement(invoice, plays) {
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
     totalAmount += amountFor(perf);
   }
-  let volumeCredits = 0;
-  for (let perf of Object.values(invoice.performances)) {
-    volumeCredits += volumeCreditsFor(perf);
-  }
+  let volumeCredits = totalVolumeCredits();
   result += `Amount owed is ${usd(totalAmount)}\n`;
   result += `You earned ${volumeCredits} credits\n`;
   return result;
@@ -55,5 +52,13 @@ module.exports.statement = function statement(invoice, plays) {
       currency: "USD",
       minimumFractionDigits: 2
     }).format(aNumber / 100);
+  }
+
+  function totalVolumeCredits() {
+    let volumeCredits = 0;
+    for (let perf of Object.values(invoice.performances)) {
+      volumeCredits += volumeCreditsFor(perf);
+    }
+    return volumeCredits;
   }
 }
