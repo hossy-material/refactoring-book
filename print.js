@@ -1,4 +1,8 @@
 module.exports.statement = function statement(invoice, plays) {
+  return renderPlainText(invoice, plays)
+}
+
+function renderPlainText(invoice, plays) {
   let result = `Statement for ${invoice.customer}`;
   for (let perf of Object.values(invoice.performances)) {
     // 注文の内訳を表示
