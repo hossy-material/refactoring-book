@@ -1,10 +1,13 @@
 module.exports.statement = function statement(invoice, plays) {
+  const statement = {};
+  statement.customer = invoice.customer;
+  statement.performances = invoice.performances;
   return renderPlainText(invoice, plays)
 }
 
-function renderPlainText(invoice, plays) {
-  let result = `Statement for ${invoice.customer}`;
-  for (let perf of Object.values(invoice.performances)) {
+function renderPlainText(data, plays) {
+  let result = `Statement for ${data.customer}`;
+  for (let perf of Object.values(data.performances)) {
     // 注文の内訳を表示
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${perf.audience} seats)\n`;
   }
@@ -57,7 +60,7 @@ function renderPlainText(invoice, plays) {
 
   function totalVolumeCredits() {
     let result = 0;
-    for (let perf of Object.values(invoice.performances)) {
+    for (let perf of Object.values(data.performances)) {
       result += volumeCreditsFor(perf);
     }
     return result;
@@ -65,7 +68,7 @@ function renderPlainText(invoice, plays) {
 
   function totalAmount() {
     let result = 0;
-    for (let perf of invoice.performances) {
+    for (let perf of data.performances) {
       result += amountFor(perf);
     }
     return result;
