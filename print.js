@@ -1,8 +1,18 @@
 module.exports.statement = function statement(invoice, plays) {
   const statement = {};
   statement.customer = invoice.customer;
-  statement.performances = invoice.performances;
+  statement.performances = invoice.performances.map(enrichPerformance);
   return renderPlainText(invoice, plays)
+
+  function enrichPerformance(aPerformance) {
+    const result = Object.assign({}, aPerformance);
+    result.play = playFor(result);
+    return result;
+  }
+
+  function playFor(aPerformance) {
+    return plays[aPerformance.playID];
+  }
 }
 
 function renderPlainText(data, plays) {
